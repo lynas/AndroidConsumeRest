@@ -1,21 +1,19 @@
 package com.lynas.androidresttest;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import rx.Observable;
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import com.lynas.androidresttest.domain.GitUser;
+import com.lynas.androidresttest.service.GitHubService;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,27 +49,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void callAsync() {
-        String[] array = new String[]{};
-        Observable.just(array)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Object>() {
+        GitHubService.Factory.getinstance().getUser().enqueue(new Callback<GitUser>() {
+            @Override
+            public void onResponse(Call<GitUser> call, Response<GitUser> response) {
+                System.out.println("#############################");
+                System.out.println("#############################");
+                System.out.println("#############################");
+                System.out.println(response.body().getId());
+            }
 
-                    @Override
-                    public void onCompleted() {
-                        System.out.println("work complete");
-                    }
+            @Override
+            public void onFailure(Call<GitUser> call, Throwable t) {
+                System.out.println("#############################");
+                System.out.println("#############################");
+                System.out.println("#############################");
+                System.out.println("error");
+            }
+        });
 
-                    @Override
-                    public void onError(Throwable e) {
-                        System.out.println("work error");
-                    }
-
-                    @Override
-                    public void onNext(Object o) {
-                        System.out.println("work complete say next");
-                    }
-                });
     }
 
     @Override
