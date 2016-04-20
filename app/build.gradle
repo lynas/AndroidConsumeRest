@@ -22,6 +22,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+    }
 }
 
 dependencies {
@@ -33,9 +36,7 @@ dependencies {
             'com.jakewharton:butterknife:7.0.1',
             'io.reactivex:rxandroid:1.1.0',
             'com.squareup.retrofit2:retrofit:2.0.2',
-            'com.squareup.retrofit2:converter-gson:2.0.2',
-
-            'org.glassfish:javax.annotation:10.0-b28'
+            'com.squareup.retrofit2:converter-gson:2.0.2'
 
 
     )
