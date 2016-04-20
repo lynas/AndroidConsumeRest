@@ -7,9 +7,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import com.lynas.androidresttest.domain.GitUser;
+import com.lynas.androidresttest.domain.json.request.AuthenticationRequest;
+import com.lynas.androidresttest.domain.json.response.AuthenticationResponse;
 import com.lynas.androidresttest.service.GitHubService;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -23,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
     EditText etPassword;
     @Bind(R.id.bt_login)
     Button login;
+    @Bind(R.id.git_id)
+    TextView git_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        login.setOnClickListener(arg0->{
+        login.setOnClickListener(arg0 -> {
             System.out.println("it works");
             System.out.println(etUserName.getText());
             System.out.println(etPassword.getText());
@@ -49,13 +54,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void callAsync() {
-        GitHubService.Factory.getinstance().getUser().enqueue(new Callback<GitUser>() {
+        /*GitHubService.Factory.getinstance().getUser().enqueue(new Callback<GitUser>() {
             @Override
             public void onResponse(Call<GitUser> call, Response<GitUser> response) {
                 System.out.println("#############################");
                 System.out.println("#############################");
                 System.out.println("#############################");
                 System.out.println(response.body().getId());
+                git_id.setText(response.body().getId());
             }
 
             @Override
@@ -65,7 +71,22 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("#############################");
                 System.out.println("error");
             }
-        });
+        });*/
+
+        GitHubService.Factory
+                .getinstance()
+                .login(new AuthenticationRequest("sazzad", "123456"))
+                .enqueue(new Callback<AuthenticationResponse>() {
+                    @Override
+                    public void onResponse(Call<AuthenticationResponse> call, Response<AuthenticationResponse> response) {
+                        git_id.setText(response.body().getToken());
+                    }
+
+                    @Override
+                    public void onFailure(Call<AuthenticationResponse> call, Throwable t) {
+                        git_id.setText("error");
+                    }
+                });
 
     }
 
