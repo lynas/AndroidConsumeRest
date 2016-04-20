@@ -1,22 +1,27 @@
 package com.lynas.androidresttest;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import com.lynas.androidresttest.domain.GitUser;
+import butterknife.OnClick;
+import com.lynas.androidresttest.domain.Book;
 import com.lynas.androidresttest.domain.json.request.AuthenticationRequest;
 import com.lynas.androidresttest.domain.json.response.AuthenticationResponse;
 import com.lynas.androidresttest.service.GitHubService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -53,6 +58,33 @@ public class MainActivity extends AppCompatActivity {
         });*/
     }
 
+    @OnClick(R.id.bt_book_list)
+    public void submit(View view) {
+        //git_id.setText(AppConstant.TOKEN);
+        System.out.println("#############################");
+        System.out.println("#############################");
+        System.out.println("#############################");
+        SharedPreferences prefs = getSharedPreferences(AppConstant.TOKEN, MODE_PRIVATE);
+        System.out.println(prefs.getString("token", null));
+        GitHubService.Factory
+                .getinstance()
+                .getBookList(prefs.getString("token", null))
+                .enqueue(new Callback<List<Book>>() {
+                    @Override
+                    public void onResponse(Call<List<Book>> call, Response<List<Book>> response) {
+                        if (!response.body().isEmpty())
+                            git_id.setText(""+response.body().size());
+                        else
+                            git_id.setText("0");
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Book>> call, Throwable t) {
+
+                    }
+                });
+    }
+
     private void callAsync() {
         /*GitHubService.Factory.getinstance().getUser().enqueue(new Callback<GitUser>() {
             @Override
@@ -79,7 +111,13 @@ public class MainActivity extends AppCompatActivity {
                 .enqueue(new Callback<AuthenticationResponse>() {
                     @Override
                     public void onResponse(Call<AuthenticationResponse> call, Response<AuthenticationResponse> response) {
-                        git_id.setText(response.body().getToken());
+                        //git_id.setText(response.body().getToken());
+                        AppConstant.TOKEN = response.body().getToken();
+                        git_id.setText("Found");
+
+                        SharedPreferences.Editor editor = getSharedPreferences(AppConstant.TOKEN, MODE_PRIVATE).edit();
+                        editor.putString("token", response.body().getToken());
+                        editor.commit();
                     }
 
                     @Override
